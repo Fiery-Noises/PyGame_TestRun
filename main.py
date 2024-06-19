@@ -8,9 +8,11 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # Screen dimensions
-WIDTH = 1280
-HEIGHT = 720
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen_info = pygame.display.Info()
+WIDTH = screen_info.current_w
+HEIGHT = screen_info.current_h
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+pygame.display.flip()
 pygame.display.set_caption('Player Mover with Enemy')
 
 # Load images
@@ -27,7 +29,7 @@ background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  # 
 
 # Constants
 PLAYER_SPEED = 5
-ENEMY_SPEED = PLAYER_SPEED * 0.75
+ENEMY_SPEED = PLAYER_SPEED * 0.5
 PROJECTILE_SPEED = 8
 ENEMY_RADIUS = enemy_image.get_width() // 2  # Use half the width as the radius for collision detection
 HOUSE_SPAWN_DISTANCE = 200  # Distance from player where the house spawns enemies
@@ -58,9 +60,14 @@ class Player(Entity):
             dx = -PLAYER_SPEED
         elif keys[pygame.K_d]:  # Move right
             dx = PLAYER_SPEED
-        self.x += dx
-        self.y += dy
-        self.rect.center = (self.x, self.y)
+        
+        # Move player
+        self.rect.x += dx
+        self.rect.y += dy
+
+        # Keep player within window boundaries
+        self.rect.x = max(0, min(self.rect.x, WIDTH - self.rect.width))
+        self.rect.y = max(0, min(self.rect.y, HEIGHT - self.rect.height))
 
 class Enemy(Entity):
     def __init__(self, image, x, y):
@@ -81,8 +88,22 @@ class House(Entity):
     def __init__(self, image, x, y):
         super().__init__(image, x, y)
     
-    def spawn_enemy(self):
-        return Enemy(enemy_image, self.x, self.y)
+    def spawn_enemy(self, player, enemies):
+        while True:
+            if player.x - self.x < 0:
+                x = random.randint(0, self.x+20)
+            else:
+                x = random.randint(self.x, player.x+20)
+            
+            if player.y - self.y < 0:
+                y = random.randint(0, self.y+20)
+            else:
+                y = random.randint(self.y, player.y+20)
+
+            if math.hypot(x - player.x, y - player.y) > 200:  # Adjust the distance threshold as needed
+                new_enemy = Enemy(enemy_image, x, y)
+
+                return new_enemy  # Exit the loop and return the created enemy
 
 class Projectile(Entity):
     def __init__(self, image, x, y, target_x, target_y):
@@ -107,7 +128,8 @@ class Projectile(Entity):
 player = Player(player_image, WIDTH // 2, HEIGHT // 2)
 house = House(house_image, random.randint(player.x + HOUSE_SPAWN_DISTANCE, WIDTH - house_image.get_width()),
               random.randint(0, HEIGHT - house_image.get_height()))
-enemies = [house.spawn_enemy()]  # List to store enemy instances
+enemies = []
+enemies = [house.spawn_enemy(player, enemies)]  # List to store enemy instances
 projectiles = []  # List to store projectile instances
 enemies_killed = 0  # Counter for enemies killed
 
@@ -140,7 +162,7 @@ while True:
         for enemy in enemies[:]:  # Iterate over a copy of the list
             if projectile.rect.colliderect(enemy.rect):
                 enemies.remove(enemy)  # Remove enemy instance
-                enemies.extend([house.spawn_enemy() for _ in range(2)])  # Spawn 2 new enemies
+                enemies.extend([house.spawn_enemy(player, enemies) for _ in range(2)])  # Spawn 2 new enemies
                 enemies_killed += 1
                 hit = True
         if not hit:
@@ -183,7 +205,7 @@ while True:
         if retry_button.collidepoint((mouse_x, mouse_y)) and pygame.mouse.get_pressed()[0]:
             game_over = False
             retry_game = False
-            enemies = [house.spawn_enemy()]
+            enemies = [house.spawn_enemy(player, enemies)]
             enemies_killed = 0
 
         if quit_button.collidepoint((mouse_x, mouse_y)) and pygame.mouse.get_pressed()[0]:
