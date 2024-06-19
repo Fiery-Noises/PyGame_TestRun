@@ -23,6 +23,6 @@ This is a simple Python game where the goal is to survive as long as possible ag
    - Navigate to the directory where the game files are located.
 
 3. **Run the Game:**
-   python main.py
+   -python main.py
 
    Credit to https://game-icons.net/ for providing assets.
