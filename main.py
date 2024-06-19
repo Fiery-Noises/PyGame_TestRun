@@ -65,9 +65,15 @@ class Player(Entity):
         self.rect.x += dx
         self.rect.y += dy
 
+        self.x += dx
+        self.y += dy
+
         # Keep player within window boundaries
         self.rect.x = max(0, min(self.rect.x, WIDTH - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, HEIGHT - self.rect.height))
+
+        self.x = max(0, min(self.rect.x, WIDTH - self.rect.width))
+        self.y = max(0, min(self.rect.y, HEIGHT - self.rect.height))
 
 class Enemy(Entity):
     def __init__(self, image, x, y):
