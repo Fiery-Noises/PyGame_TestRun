@@ -1,6 +1,6 @@
 # Simple PyGame Test
 
-![Gameplay Screenshot](Assets/Game_Pic.png)
+![Gameplay Screenshot]([Assets/Game_Pic.png](https://github.com/Fiery-Noises/PyC2/blob/master/Assets/Game_Pic.PNG))
 
 ## Description
 This is a simple Python game where the goal is to survive as long as possible against increasingly spawning enemies. The player controls a character who must avoid or eliminate enemies to stay alive.
