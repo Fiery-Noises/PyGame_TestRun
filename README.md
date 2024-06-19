@@ -24,3 +24,5 @@ This is a simple Python game where the goal is to survive as long as possible ag
 
 3. **Run the Game:**
    python main.py
+
+   Credit to https://game-icons.net/ for providing assets.
