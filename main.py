@@ -17,7 +17,7 @@ pygame.display.set_caption('Player Mover with Enemy')
 
 # Load images
 player_image = pygame.image.load('assets/player.png')
-player_image = pygame.transform.scale(player_image, (30, 30))  # Scale player image to match enemy size
+player_image = pygame.transform.scale(player_image, (40, 40))  # Scale player image to match enemy size
 enemy_image = pygame.image.load('assets/red_skull.png')
 enemy_image = pygame.transform.scale(enemy_image, (50, 50))  # Scale enemy image to match player size
 house_image = pygame.image.load('assets/house.png')
